@@ -133,7 +133,12 @@ You can filter the issues by the following categories:
 * Resolution
     * Resolved
     * Unresolved
-
+* Severity
+  * Blocker
+  * Critical
+  * Major
+  * Minor
+  * Info
 
 ## Contributing
 

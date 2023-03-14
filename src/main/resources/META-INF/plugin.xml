@@ -15,6 +15,12 @@
 
     <change-notes>
         <![CDATA[
+        <h3>0.2.3</h3>
+        <ul>
+            <li>Feat Issue severity filter(From ForeveroLo).</li>
+            <li>Feat Issue ruleKey search.</li>
+            <li>Fix duplication filter.</li>
+        </ul>
         <h3>0.2.2</h3>
         <ul>
             <li>Fix report display error, error occurs when git changelist file is renamed or deleted.</li>

@@ -37,6 +37,7 @@ import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeScope;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class ProblemCacheService {
@@ -58,6 +59,12 @@ public class ProblemCacheService {
 
     private AnalyzeScope analyzeScope;
 
+    private Set<String> ruleKeys;
+
+    private ConcurrentMap<PsiFile, List<AbstractIssue>> filteredIssues;
+
+    private int blockerCount,  criticalCount,  majorCount,  minorCount,  infoCount;
+
     public ProblemCacheService(Project project) {
         this.project = project;
         issues = new ConcurrentHashMap<>();
@@ -72,15 +79,18 @@ public class ProblemCacheService {
         ignoreIssueCount = 0;
 
         filters = new HashSet<>();
+        ruleKeys = new HashSet<>();
+        filteredIssues = new ConcurrentHashMap<>();
     }
 
     public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
         return issues;
     }
 
-    public ConcurrentMap<PsiFile, List<AbstractIssue>> getFilteredIssues() {
-        if (filters.size() == 0) {
-            return issues;
+    public void doFilterIssues() {
+        filteredIssues.clear();
+        if (!isFilter()) {
+            return;
         }
 
         boolean includeBug = filters.contains("BUG");
@@ -95,10 +105,15 @@ public class ProblemCacheService {
         boolean includeResolved = filters.contains("RESOLVED");
         boolean includeUnresolved = filters.contains("UNRESOLVED");
         boolean filterByStatus = includeResolved || includeUnresolved;
+        boolean includeBlocker = filters.contains("BLOCKER");
+        boolean includeCritical = filters.contains("CRITICAL");
+        boolean includeMajor = filters.contains("MAJOR");
+        boolean includeMinor = filters.contains("MINOR");
+        boolean includeInfo = filters.contains("INFO");
+        boolean filterBySeverity = includeBlocker || includeCritical || includeMajor || includeMinor || includeInfo;
 
         List<PsiFile> changedFiles = GitService.getInstance(project).getChangedFiles();
 
-        ConcurrentMap<PsiFile, List<AbstractIssue>> ret = new ConcurrentHashMap<>();
         issues.forEach((psiFile, issues) -> {
             List<AbstractIssue> retIssues = new ArrayList<>();
             for (AbstractIssue issue : issues) {
@@ -158,17 +173,39 @@ public class ProblemCacheService {
                     }
                 }
 
+                if (filterBySeverity) {
+                    include = false;
+
+                    if (includeBlocker && StringUtils.equalsIgnoreCase(issue.getSeverity(), "BLOCKER")) {
+                        include = true;
+                    } else if (includeCritical && StringUtils.equalsIgnoreCase(issue.getSeverity(), "CRITICAL")) {
+                        include = true;
+                    } else if (includeMajor && StringUtils.equalsIgnoreCase(issue.getSeverity(), "MAJOR")) {
+                        include = true;
+                    } else if (includeMinor && StringUtils.equalsIgnoreCase(issue.getSeverity(), "MINOR")) {
+                        include = true;
+                    } else if (includeInfo && StringUtils.equalsIgnoreCase(issue.getSeverity(), "INFO")) {
+                        include = true;
+                    }
+
+                    if (!include) {
+                        continue;
+                    }
+                }
+
+                if (!ruleKeys.isEmpty()) {
+                    include = ruleKeys.contains(issue.getRuleKey());
+                }
+
                 if (include) {
                     retIssues.add(issue);
                 }
 
             }
             if (retIssues.size() > 0) {
-                ret.put(psiFile, retIssues);
+                filteredIssues.put(psiFile, retIssues);
             }
         });
-
-        return ret;
     }
 
     public void setIssues(ConcurrentMap<PsiFile, List<AbstractIssue>> issues) {
@@ -220,6 +257,14 @@ public class ProblemCacheService {
         this.securityHotSpotCount = securityHotSpotCount;
     }
 
+    public void setSeverityStats(int blockerCount, int criticalCount, int majorCount, int minorCount, int infoCount) {
+        this.blockerCount = blockerCount;
+        this.criticalCount = criticalCount;
+        this.majorCount = majorCount;
+        this.minorCount = minorCount;
+        this.infoCount = infoCount;
+    }
+
     public boolean isInitialized() {
         return initialized;
     }
@@ -241,11 +286,18 @@ public class ProblemCacheService {
         duplicatedBlocksCount = 0;
         securityHotSpotCount = 0;
 
+        this.blockerCount = 0;
+        this.criticalCount = 0;
+        this.majorCount = 0;
+        this.minorCount = 0;
+        this.infoCount = 0;
+
         profileLanguages.clear();
         ignoreRules.clear();
         ignoreIssueCount = 0;
 
         filters.clear();
+        ruleKeys.clear();
     }
 
     public int getUpdatedFilesIssueCount() {
@@ -292,4 +344,41 @@ public class ProblemCacheService {
     public static ProblemCacheService getInstance(@NotNull Project project) {
         return ServiceManager.getService(project, ProblemCacheService.class);
     }
+
+    public int getBlockerCount() {
+        return blockerCount;
+    }
+
+    public int getCriticalCount() {
+        return criticalCount;
+    }
+
+    public int getMajorCount() {
+        return majorCount;
+    }
+
+    public int getMinorCount() {
+        return minorCount;
+    }
+
+    public int getInfoCount() {
+        return infoCount;
+    }
+
+    public int severityTotalCount() {
+        return blockerCount + criticalCount + majorCount + minorCount + infoCount;
+    }
+
+    public Set<String> getRuleKeys() {
+        return ruleKeys;
+    }
+
+    public ConcurrentMap<PsiFile, List<AbstractIssue>> getFilteredIssues() {
+        return isFilter() ? filteredIssues : issues;
+    }
+
+    private boolean isFilter() {
+        return !filters.isEmpty() || !ruleKeys.isEmpty();
+    }
+
 }

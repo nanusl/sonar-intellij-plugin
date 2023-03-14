@@ -72,6 +72,12 @@ public class LogOutputImpl implements LogOutput {
                         report.getVulnerabilityCount(),
                         report.getDuplicatedBlocksCount(),
                         report.getSecurityHotSpotCount());
+                problemCacheService.setSeverityStats(
+                        report.getBlockerCount(),
+                        report.getCriticalCount(),
+                        report.getMajorCount(),
+                        report.getMinorCount(),
+                        report.getInfoCount());
                 return report;
             });
 

@@ -61,6 +61,8 @@ public class Report {
     private CopyOnWriteArraySet<String> ignoreRules;
     private int ignoreIssueCount;
 
+    private int blockerCount, criticalCount, majorCount, minorCount, infoCount;
+
     public Report(@NotNull Project project, @NotNull File reportDir) {
         this.project = project;
         this.reportDir = reportDir;
@@ -155,6 +157,26 @@ public class Report {
                     default:
                         ignoreIssue = true;
                         break;
+                }
+
+                switch (reportIssue.getSeverity()) {
+                    case BLOCKER:
+                        blockerCount++;
+                        break;
+                    case CRITICAL:
+                        criticalCount++;
+                        break;
+                    case MAJOR:
+                        majorCount++;
+                        break;
+                    case MINOR:
+                        minorCount++;
+                        break;
+                    case INFO:
+                        infoCount++;
+                        break;
+                    default:
+                        //do nothing
                 }
 
                 if (ignoreIssue) {
@@ -296,4 +318,25 @@ public class Report {
         // }
         // return rule;
     }
+
+    public int getBlockerCount() {
+        return blockerCount;
+    }
+
+    public int getCriticalCount() {
+        return criticalCount;
+    }
+
+    public int getMajorCount() {
+        return majorCount;
+    }
+
+    public int getMinorCount() {
+        return minorCount;
+    }
+
+    public int getInfoCount() {
+        return infoCount;
+    }
+
 }
