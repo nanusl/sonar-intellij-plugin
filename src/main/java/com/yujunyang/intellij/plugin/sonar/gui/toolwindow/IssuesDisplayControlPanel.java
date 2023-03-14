@@ -54,6 +54,11 @@ public class IssuesDisplayControlPanel extends JBPanel {
     private JBLabel unresolvedCountLabel;
     private JBLabel updatedFilesCountLabel;
     private JBLabel notUpdatedFilesCountLabel;
+    private JBLabel blockerCountLabel;
+    private JBLabel criticalCountLabel;
+    private JBLabel majorCountLabel;
+    private JBLabel minorCountLabel;
+    private JBLabel infoCountLabel;
 
     public IssuesDisplayControlPanel(Project project) {
         this.project = project;
@@ -63,6 +68,19 @@ public class IssuesDisplayControlPanel extends JBPanel {
 
     private void init() {
         setLayout(new SampleVerticalScrollLayout());
+
+        add(Box.createVerticalStrut(5));
+        addTitleLabel(ResourcesLoader.getString("toolWindow.report.displayControl.severityTitle"));
+        blockerCountLabel = createCountLabel("0");
+        addControlItemPanel("severity.blocker", blockerCountLabel, "BLOCKER");
+        criticalCountLabel = createCountLabel("0");
+        addControlItemPanel("severity.critical", criticalCountLabel, "CRITICAL");
+        majorCountLabel = createCountLabel("0");
+        addControlItemPanel("severity.major", majorCountLabel, "MAJOR");
+        minorCountLabel = createCountLabel("0");
+        addControlItemPanel("severity.minor", minorCountLabel, "MINOR");
+        infoCountLabel = createCountLabel("0");
+        addControlItemPanel("severity.info", infoCountLabel, "INFO");
 
         addTitleLabel(ResourcesLoader.getString("toolWindow.report.displayControl.issueTypeTitle"));
         bugCountLabel = createCountLabel("0");
@@ -104,6 +122,13 @@ public class IssuesDisplayControlPanel extends JBPanel {
         notUpdatedFilesCountLabel.setText(String.valueOf(problemCacheService.getNotUpdatedFilesIssueCount()));
         resolvedCountLabel.setText(String.valueOf(problemCacheService.getFixedIssueCount()));
         unresolvedCountLabel.setText(String.valueOf(problemCacheService.getUnresolvedIssueCount()));
+
+        blockerCountLabel.setText(String.valueOf(problemCacheService.getUnresolvedIssueCount()));
+        blockerCountLabel.setText(String.valueOf(problemCacheService.getBlockerCount()));
+        criticalCountLabel.setText(String.valueOf(problemCacheService.getCriticalCount()));
+        majorCountLabel.setText(String.valueOf(problemCacheService.getMajorCount()));
+        minorCountLabel.setText(String.valueOf(problemCacheService.getMinorCount()));
+        infoCountLabel.setText(String.valueOf(problemCacheService.getInfoCount()));
     }
 
     public void reset() {
@@ -116,7 +141,12 @@ public class IssuesDisplayControlPanel extends JBPanel {
                 updatedFilesCountLabel,
                 notUpdatedFilesCountLabel,
                 resolvedCountLabel,
-                unresolvedCountLabel).forEach(label -> {
+                unresolvedCountLabel,
+                blockerCountLabel,
+                criticalCountLabel,
+                majorCountLabel,
+                minorCountLabel,
+                infoCountLabel).forEach(label -> {
             label.setText("0");
             cancelHighlight((JBPanel)(label.getParent()));
         });

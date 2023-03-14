@@ -47,6 +47,7 @@ public class IssuesPanel extends JBPanel {
     private IssuesDisplayControlPanel issuesDisplayControlPanel;
     private JBPanel listPanelParent;
     private CardLayout listPanelParentLayout;
+    private SearchPanel searchPanel;
 
     public IssuesPanel(Project project) {
         this.project = project;
@@ -57,6 +58,9 @@ public class IssuesPanel extends JBPanel {
     private void init() {
         setLayout(new BorderLayout());
         setSize(300, 300);
+
+        searchPanel = new SearchPanel(project);
+        add(searchPanel, BorderLayout.NORTH);
 
         displayControlScrollPane = new JBScrollPane();
         displayControlScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -112,8 +116,10 @@ public class IssuesPanel extends JBPanel {
 
     private void filter() {
         listScrollPane.getVerticalScrollBar().setValue(0);
+        ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+        problemCacheService.doFilterIssues();
         issueListPanel.refresh();
-        if (ProblemCacheService.getInstance(project).getFilteredIssues().size() > 0) {
+        if (problemCacheService.getFilteredIssues().size() > 0) {
             listPanelParentLayout.show(listPanelParent, "ISSUES_LIST");
         } else {
             listPanelParentLayout.show(listPanelParent, "ISSUES_EMPTY");
@@ -125,5 +131,6 @@ public class IssuesPanel extends JBPanel {
     public void reset() {
         issuesDisplayControlPanel.reset();
         issueListPanel.reset();
+        searchPanel.reset();
     }
 }
