@@ -93,7 +93,7 @@
         <codeInsight.lineMarkerProvider language="XML"
                                         implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueLineMarkerProvider"/>
         <applicationConfigurable parentId="tools" id="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"
-                instance="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"/>
+                displayName="SonarAnalyzer" instance="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"/>
         <projectConfigurable parentId="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"
                 instance="com.yujunyang.intellij.plugin.sonar.extensions.ProjectSettingsConfigurable"
                              nonDefaultProject="true"
