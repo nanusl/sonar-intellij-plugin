@@ -45,7 +45,7 @@ public final class ResourcesLoader {
 
     @NotNull
     public static Icon loadIcon(final String fileName) {
-        return IconLoader.getIcon(ICON_RESOURCES_PATH_PREFIX + fileName);
+        return IconLoader.getIcon(ICON_RESOURCES_PATH_PREFIX + fileName, ResourcesLoader.class);
     }
 
     @NotNull

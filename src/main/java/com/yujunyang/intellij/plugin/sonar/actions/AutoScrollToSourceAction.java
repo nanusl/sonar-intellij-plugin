@@ -21,6 +21,7 @@
 
 package com.yujunyang.intellij.plugin.sonar.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
@@ -46,5 +47,10 @@ public class AutoScrollToSourceAction extends ToggleAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
         e.getPresentation().setText(ResourcesLoader.getString("action.autoScrollToSource"));
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }

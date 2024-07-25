@@ -22,6 +22,7 @@
 
 package com.yujunyang.intellij.plugin.sonar.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompilerManager;
@@ -74,5 +75,10 @@ public abstract class AnalyzeProjectFiles extends AbstractAnalyzeAction {
                 return new AnalyzeScope(project, AnalyzeScope.ScopeType.PROJECT_FILES);
             }
         }.start();
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }

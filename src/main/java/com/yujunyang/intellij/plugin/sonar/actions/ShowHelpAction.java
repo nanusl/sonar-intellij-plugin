@@ -24,6 +24,7 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 import javax.swing.event.HyperlinkEvent;
 
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
@@ -49,6 +50,11 @@ public class ShowHelpAction extends AnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         e.getPresentation().setText(ResourcesLoader.getString("action.help"));
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 
     private StringBuilder createHelpInfo() {

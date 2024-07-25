@@ -40,8 +40,8 @@ public class ToolWindowFactoryImpl implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         JBPanel reportPanel = new ReportPanel(project);
         JBPanel logPanel = new LogPanel(project);
-        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(reportPanel, ResourcesLoader.getString("toolWindow.tab.report"), false));
-        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(logPanel, ResourcesLoader.getString("toolWindow.tab.log"), false));
+        toolWindow.getContentManager().addContent(ContentFactory.getInstance().createContent(reportPanel, ResourcesLoader.getString("toolWindow.tab.report"), false));
+        toolWindow.getContentManager().addContent(ContentFactory.getInstance().createContent(logPanel, ResourcesLoader.getString("toolWindow.tab.log"), false));
     }
 
     @Nullable
